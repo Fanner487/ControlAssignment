@@ -36,13 +36,13 @@ void setup()
   smooth();
 
   controlP5 = new ControlP5(this);
-  
+
   loadData();
   displayFigures();
 
-//  googleImg = loadImage();
-//  appleImg = loadImage();
-//  microsoftImg = loadImage();
+  //  googleImg = loadImage();
+  //  appleImg = loadImage();
+  //  microsoftImg = loadImage();
 
   company = new String[3];
   company[0] = "Google";
@@ -61,50 +61,48 @@ void setup()
   bY = height / 2;
   bWidth = 150;
   bHeight = 50;
-  
+
   //creating buttons
-  line = controlP5.addButton("lineGraph",1, bX,bY-100,bWidth, bHeight);
-  scatter = controlP5.addButton("scatterGraph",1,bX,bY-50,bWidth, bHeight);
-  coxComb = controlP5.addButton("coxComb",1,bX,bY,bWidth, bHeight);
-  doughnut = controlP5.addButton("doughnutCharts",1,bX,bY+50,bWidth, bHeight);
-  back = controlP5.addButton("back",1,width - 150, height - 50 ,bWidth, bHeight);
+  line = controlP5.addButton("lineGraph", 1, bX, bY-100, bWidth, bHeight);
+  scatter = controlP5.addButton("scatterGraph", 1, bX, bY-50, bWidth, bHeight);
+  coxComb = controlP5.addButton("coxComb", 1, bX, bY, bWidth, bHeight);
+  doughnut = controlP5.addButton("doughnutCharts", 1, bX, bY+50, bWidth, bHeight);
+  back = controlP5.addButton("back", 1, width - 130, height - 30, bWidth - 20, bHeight - 20);
   back.hide();
-   
-  
 }
 
 void draw()
 { 
-  
+
   if (lineG == true) {
     background(0);
     int x = mouseX;
     drawAxis(years.size(), 10, maximum(company[0]), border);
-    for(int i = 0; i < company.length; i++)
+    for (int i = 0; i < company.length; i++)
     {
       drawTrendGraph(company[i], border, maximum(company[0]));
     }
-    
+
     redLine(x);
     drawCircle(x);
   }
-  
-  if(scatG == true){
+
+  if (scatG == true) {
     background(0);
     drawAxis(years.size(), 10, maximum(company[0]), border);
     //change this using a for loop
     scatterGraph();
   }
 
-  if(coxG == true){
+  if (coxG == true) {
     background(0);
     pushMatrix();
     translate(width * 0.25f, 0);
     drawTotalPieChart();
     popMatrix();
   }
-  
-  if(doughG == true){
+
+  if (doughG == true) {
     background(0);
     pushMatrix();
     translate(-(width * 0.05f), -(width * 0.1f));
@@ -121,7 +119,6 @@ void draw()
     drawPieChart(company[0]);
     popMatrix();
   }
-  
 }//end draw
 
 
@@ -138,8 +135,6 @@ void controlEvent(ControlEvent theEvent)
     scatG = false;
     doughG = false;
     coxG = false;
-    
-
   }
 
   if (theEvent.controller().getName().equals("scatterGraph")) {
@@ -148,12 +143,11 @@ void controlEvent(ControlEvent theEvent)
     scatter.hide();
     coxComb.hide();
     doughnut.hide();
-    
+
     lineG = false;
     scatG = true;
     doughG = false;
     coxG = false;
-    
   }
 
   if (theEvent.controller().getName().equals("doughnutCharts")) {       
@@ -162,29 +156,27 @@ void controlEvent(ControlEvent theEvent)
     scatter.hide();
     coxComb.hide();
     doughnut.hide();
-    
+
     lineG = false;
     scatG = false;
     doughG = true;
     coxG = false;
-    
   }
 
   if (theEvent.controller().getName().equals("coxComb")) {
-  
+
     back.show();
     line.hide();
     scatter.hide();
     coxComb.hide();
     doughnut.hide();
-    
+
     lineG = false;
     scatG = false;
     doughG = false;
     coxG = true;
-
   }
-  
+
   if (theEvent.controller().getName().equals("back")) {
     background(0);
     lineG = false;
@@ -197,7 +189,6 @@ void controlEvent(ControlEvent theEvent)
     coxComb.show();
     doughnut.show();
   }
-
 }
 
 void scatterGraph()
@@ -210,32 +201,95 @@ void scatterGraph()
   {
     Year value = years.get(i);
     float size = 100;
+    float x, y;
     float sizeGoogle = map(value.google, 0, maxValueOfThree(), 0, size);
     float sizeApple = map(value.apple, 0, maxValueOfThree(), 0, size);
-    ;
     float sizeMicrosoft = map(value.microsoft, 0, maxValueOfThree(), 0, size);
-    ;
 
-    stroke(companyColour[0]);
-    fill(companyColour[0]);
-    float x = map(i, 0, years.size(), border, width - border);
-    float y = map(value.google, 0, maximum(company[0]), height - border, border);
 
-    ellipse((float)x, y, sizeGoogle, sizeGoogle);
+    if (value.google == value.apple) {
+      stroke(companyColour[0]);
+      fill(companyColour[0]);
+      pushMatrix();
+      x = map(i, 0, years.size(), border, width - border);
+      y = map(value.google, 0, maximum(company[0]), height - border, border);
+      translate(x, y);    
+      arc((float)0, 0, sizeGoogle, sizeGoogle, 0, PI);      
+      
+      stroke(companyColour[1]);
+      fill(companyColour[1]);
+      rotate(-PI);
+      arc((float)0, 0, sizeApple, sizeApple, 0, PI);
+      popMatrix();
+      
+      x = map(i, 0, years.size(), border, width - border);
+      y = map(value.microsoft, 0, maximum(company[0]), height - border, border);
+      stroke(companyColour[2]);
+      fill(companyColour[2]);
+      ellipse((float)x, y, sizeMicrosoft, sizeMicrosoft);
+      
+    } else if (value.google == value.microsoft) {
+      
+      pushMatrix();
+      x = map(i, 0, years.size(), border, width - border);
+      y = map(value.google, 0, maximum(company[0]), height - border, border);
+      translate(x, y); 
+      stroke(companyColour[0]);
+      fill(companyColour[0]);
+      rotate(-PI);
+      arc((float)0, 0, sizeGoogle, sizeGoogle, 0, PI);
+    
+      stroke(companyColour[2]);
+      fill(companyColour[2]);
+      rotate(-PI);
+      arc((float)0, 0, sizeMicrosoft, sizeMicrosoft, 0, PI);
+      popMatrix();
+      
+      x = map(i, 0, years.size(), border, width - border);
+      y = map(value.apple, 0, maximum(company[0]), height - border, border);
+      stroke(companyColour[1]);
+      fill(companyColour[1]);
+      ellipse((float)x, y, sizeApple, sizeApple);
+    } else if (value.apple == value.microsoft) {
+      pushMatrix();
+      x = map(i, 0, years.size(), border, width - border);
+      y = map(value.apple, 0, maximum(company[0]), height - border, border);
+      translate(x, y);     
+      stroke(companyColour[1]);
+      fill(companyColour[1]);      
+      arc((float)0, 0, sizeApple, sizeApple, 0, PI);
 
-    x = map(i, 0, years.size(), border, width - border);
-    y = map(value.apple, 0, maximum(company[0]), height - border, border);
+      stroke(companyColour[2]);
+      fill(companyColour[2]);
+      rotate(-PI);
+      arc((float)0, 0, sizeMicrosoft, sizeMicrosoft, 0, PI);
+      popMatrix();
+      
+      x = map(i, 0, years.size(), border, width - border);
+      y = map(value.google, 0, maximum(company[0]), height - border, border);
+      stroke(companyColour[0]);
+      fill(companyColour[0]);
+      ellipse((float)x, y, sizeGoogle, sizeGoogle);
+    } else {
 
-    stroke(companyColour[1]);
-    fill(companyColour[1]);
-    ellipse((float)x, y, sizeApple, sizeApple);
+      x = map(i, 0, years.size(), border, width - border);
+      y = map(value.google, 0, maximum(company[0]), height - border, border);
+      stroke(companyColour[0]);
+      fill(companyColour[0]);
+      ellipse((float)x, y, sizeGoogle, sizeGoogle);
 
-    x = map(i, 0, years.size(), border, width - border);
-    y = map(value.microsoft, 0, maximum(company[0]), height - border, border);
+      x = map(i, 0, years.size(), border, width - border);
+      y = map(value.apple, 0, maximum(company[0]), height - border, border);
+      stroke(companyColour[1]);
+      fill(companyColour[1]);
+      ellipse((float)x, y, sizeApple, sizeApple);
 
-    stroke(companyColour[2]);
-    fill(companyColour[2]);
-    ellipse((float)x, y, sizeMicrosoft, sizeMicrosoft);
+      x = map(i, 0, years.size(), border, width - border);
+      y = map(value.microsoft, 0, maximum(company[0]), height - border, border);
+      stroke(companyColour[2]);
+      fill(companyColour[2]);
+      ellipse((float)x, y, sizeMicrosoft, sizeMicrosoft);
+    }
   }
 }
 
@@ -394,7 +448,7 @@ void drawPieChart(String comp)
   float max = 0;
   float theta = 0;
   float col = 0;
-    if (comp.equals(company[0])) {
+  if (comp.equals(company[0])) {
     sum = sum(company[0]);
     max = maximum(company[0]);
   }
@@ -551,7 +605,6 @@ void drawTrendGraph(String comp, float border, float maxValue) {
     }
 
     line((float)x1, y1, (float)x2, y2);
-
   }
 }
 
@@ -664,3 +717,4 @@ int maximum(String comp) {
 
   return max;
 }
+
